@@ -35,11 +35,11 @@
 <body class="bg-slate-950 text-slate-100 min-h-screen selection:bg-blue-600 selection:text-white flex flex-col">
   <div id="app" class="flex flex-col min-h-screen">
     
-    <!-- Top Control / Evaluation Bar -->
-    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 px-4 py-2.5">
+    <!-- Top Evaluation Control Bar -->
+    <header class="bg-slate-900/95 backdrop-blur-md border-b border-slate-800 sticky top-0 z-40 px-4 py-2.5 shadow-lg">
       <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3">
         
-        <!-- Project Brand -->
+        <!-- Project Brand & Status -->
         <div class="flex items-center gap-3">
           <div class="bg-gradient-to-tr from-blue-600 to-indigo-500 p-2 rounded-xl text-white shadow-lg shadow-blue-500/20">
             <i data-lucide="bus-front" class="w-5 h-5"></i>
@@ -48,47 +48,100 @@
             <div class="flex items-center gap-2">
               <h1 class="text-sm font-extrabold tracking-tight text-white">Translink Connect Access</h1>
               <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-400/30 rounded-full">
-                DECO6500 A2
+                DECO6500 A2 Evaluation
               </span>
             </div>
-            <p class="text-xs text-slate-400">Route 66 (UQ Lakes) End-to-End Functional Prototype</p>
+            <p class="text-xs text-slate-400">Route 66 (UQ Lakes) • Layer 1 & Layer 2 Inquiry Prototype</p>
           </div>
         </div>
 
-        <!-- View Mode Switcher -->
-        <div class="flex items-center bg-slate-950 p-1 rounded-xl border border-slate-800 shadow-inner">
-          <button 
-            @click="viewMode = 'split'" 
-            :class="viewMode === 'split' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'"
-            class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5"
-          >
-            <i data-lucide="columns-2" class="w-3.5 h-3.5"></i>
-            Dual Split View
-          </button>
-          <button 
-            @click="viewMode = 'passenger'" 
-            :class="viewMode === 'passenger' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'"
-            class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5"
-          >
-            <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
-            Passenger Only
-          </button>
-          <button 
-            @click="viewMode = 'driver'" 
-            :class="viewMode === 'driver' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-400 hover:text-slate-200'"
-            class="px-3 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5"
-          >
-            <i data-lucide="tablet" class="w-3.5 h-3.5"></i>
-            Driver Only
-          </button>
+        <!-- Evaluation Scenario Matrix Controls -->
+        <div class="flex flex-wrap items-center gap-2 bg-slate-950 p-1.5 rounded-2xl border border-slate-800">
+          
+          <!-- Q1.2 Scenario Selector -->
+          <div class="flex items-center gap-1 bg-slate-900 px-2 py-1 rounded-xl border border-slate-800 text-xs">
+            <span class="text-slate-400 font-medium text-[11px]">Q1.2 Scenario:</span>
+            <button 
+              @click="applyScenario('A')"
+              :class="activeScenario === 'A' ? 'bg-blue-600 text-white font-bold' : 'text-slate-300 hover:text-white'"
+              class="px-2 py-0.5 rounded-md transition-all text-xs"
+              title="Scenario A: Wheelchair + Ramp Only"
+            >
+              A (Ramp)
+            </button>
+            <button 
+              @click="applyScenario('B')"
+              :class="activeScenario === 'B' ? 'bg-indigo-600 text-white font-bold' : 'text-slate-300 hover:text-white'"
+              class="px-2 py-0.5 rounded-md transition-all text-xs"
+              title="Scenario B: Wheelchair + Ramp + Physical Assistance"
+            >
+              B (Ramp+Assist)
+            </button>
+            <button 
+              @click="applyScenario('C')"
+              :class="activeScenario === 'C' ? 'bg-emerald-600 text-white font-bold' : 'text-slate-300 hover:text-white'"
+              class="px-2 py-0.5 rounded-md transition-all text-xs"
+              title="Scenario C: Walking Frame / No Ramp"
+            >
+              C (No Ramp)
+            </button>
+          </div>
+
+          <!-- Q2.1 Time Pressure Condition Selector -->
+          <div class="flex items-center gap-1 bg-slate-900 px-2 py-1 rounded-xl border border-slate-800 text-xs">
+            <span class="text-slate-400 font-medium text-[11px]">Q2.1 Condition:</span>
+            <button 
+              @click="setTimePressure(false)"
+              :class="!isTimePressure ? 'bg-emerald-600 text-white font-bold' : 'text-slate-300 hover:text-white'"
+              class="px-2 py-0.5 rounded-md transition-all flex items-center gap-1 text-xs"
+            >
+              <span class="w-2 h-2 rounded-full bg-emerald-300"></span>
+              On Time
+            </button>
+            <button 
+              @click="setTimePressure(true)"
+              :class="isTimePressure ? 'bg-rose-600 text-white font-bold animate-pulse' : 'text-slate-300 hover:text-white'"
+              class="px-2 py-0.5 rounded-md transition-all flex items-center gap-1 text-xs"
+            >
+              <span class="w-2 h-2 rounded-full bg-rose-300"></span>
+              🔴 +6m Late
+            </button>
+          </div>
+
+          <!-- View Mode Toggle -->
+          <div class="hidden sm:flex items-center gap-1 border-l border-slate-800 pl-2">
+            <button 
+              @click="viewMode = 'split'" 
+              :class="viewMode === 'split' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-slate-200'"
+              class="px-2 py-1 text-xs font-semibold rounded-lg transition-all"
+              title="Split View"
+            >
+              <i data-lucide="columns-2" class="w-3.5 h-3.5"></i>
+            </button>
+            <button 
+              @click="viewMode = 'passenger'" 
+              :class="viewMode === 'passenger' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-slate-200'"
+              class="px-2 py-1 text-xs font-semibold rounded-lg transition-all"
+              title="Passenger View"
+            >
+              <i data-lucide="smartphone" class="w-3.5 h-3.5"></i>
+            </button>
+            <button 
+              @click="viewMode = 'driver'" 
+              :class="viewMode === 'driver' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-slate-200'"
+              class="px-2 py-1 text-xs font-semibold rounded-lg transition-all"
+              title="Driver View"
+            >
+              <i data-lucide="tablet" class="w-3.5 h-3.5"></i>
+            </button>
+          </div>
         </div>
 
-        <!-- Prototype Quick Controls -->
+        <!-- Global Evaluation Controls -->
         <div class="flex items-center gap-2">
           <button 
             @click="resetFlow" 
             class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 text-xs font-semibold rounded-xl transition-all flex items-center gap-1.5 shadow-sm"
-            title="Reset to Screen 1"
           >
             <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-slate-400"></i>
             Reset Flow
@@ -99,17 +152,27 @@
             class="px-3 py-1.5 border border-slate-700 text-xs font-semibold rounded-xl transition-all flex items-center gap-1.5 shadow-sm"
           >
             <i data-lucide="clipboard-check" class="w-3.5 h-3.5"></i>
-            Test Logs ({{ evaluationLogs.length }})
+            Logs ({{ evaluationLogs.length }})
           </button>
         </div>
 
       </div>
+
+      <!-- Time Pressure Alert Banner (When Q2.1 is active) -->
+      <div v-if="isTimePressure" class="mt-2 bg-gradient-to-r from-rose-900/90 via-red-800/90 to-rose-950 border border-rose-600/70 text-white px-4 py-1.5 rounded-xl text-xs flex items-center justify-between shadow-lg shadow-rose-950/50 animate-in fade-in duration-200">
+        <div class="flex items-center gap-2 font-bold">
+          <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-300 animate-bounce"></i>
+          <span>[Q2.1 TIME PRESSURE CONDITION]: Route 66 running <strong>6 mins behind schedule</strong>. Target Dwell: <strong>&lt; 90s</strong></span>
+        </div>
+        <div class="font-mono text-xs bg-black/40 px-2 py-0.5 rounded border border-rose-500/40 text-rose-200">
+          Elapsed Dwell: {{ formatTimer }}
+        </div>
+      </div>
     </header>
 
-    <!-- Main Working Stage -->
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 flex flex-col justify-center">
+    <!-- Main Dual Mockup Viewport -->
+    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 flex flex-col justify-center">
       
-      <!-- Split Screen / Device Mockups Container -->
       <div 
         class="grid gap-8 items-start transition-all duration-300"
         :class="{
@@ -119,36 +182,36 @@
         }"
       >
         
-        <!-- ========================================== -->
-        <!-- 1. PASSENGER SIDE DEVICE (Mobile Frame)    -->
-        <!-- ========================================== -->
+        <!-- ======================================================== -->
+        <!-- 1. PASSENGER INTERFACE (Mobile Viewport)                 -->
+        <!-- ======================================================== -->
         <section 
           v-if="viewMode === 'split' || viewMode === 'passenger'"
           class="flex flex-col items-center"
         >
-          <!-- Device Header Tag -->
+          <!-- Device Header -->
           <div class="w-full flex items-center justify-between px-3 mb-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
             <span class="flex items-center gap-1.5 text-blue-400">
-              <i data-lucide="user" class="w-4 h-4"></i>
-              Passenger Device (UQ Lakes)
+              <i data-lucide="smartphone" class="w-4 h-4"></i>
+              Passenger App (UQ Lakes)
             </span>
             <span class="font-mono text-[11px] text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
               Screen {{ passengerStep }} of 4
             </span>
           </div>
 
-          <!-- Smartphone Shell -->
+          <!-- Phone Shell -->
           <div class="w-full max-w-[390px] h-[720px] bg-slate-900 rounded-[44px] p-3.5 shadow-2xl border-4 border-slate-800 relative flex flex-col justify-between overflow-hidden ring-1 ring-slate-700/50">
             
-            <!-- Dynamic Island / Speaker Notch -->
+            <!-- Dynamic Island -->
             <div class="absolute top-4 left-1/2 -translate-x-1/2 w-28 h-5 bg-black rounded-full z-30 flex items-center justify-center">
               <div class="w-3 h-3 bg-slate-900 rounded-full ml-auto mr-3 border border-slate-800"></div>
             </div>
 
-            <!-- Phone Screen Content (White Native Look) -->
+            <!-- Screen Area -->
             <div class="w-full h-full bg-slate-50 rounded-[34px] text-slate-900 flex flex-col overflow-hidden relative pt-7 pb-4">
               
-              <!-- App Top Bar inside Phone -->
+              <!-- App Bar -->
               <div class="px-5 py-3 border-b border-slate-200 bg-white flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-2">
                   <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center text-white font-bold text-xs">
@@ -162,20 +225,21 @@
                 </div>
               </div>
 
-              <!-- SCREEN 1: Bus / Journey Overview -->
+              <!-- SCREEN 1: Journey & Bus Overview -->
               <div v-if="passengerStep === 1" class="flex-1 p-5 flex flex-col justify-between overflow-y-auto">
                 <div class="space-y-4">
-                  <!-- Station Header -->
+                  
+                  <!-- Current Stop Box -->
                   <div class="bg-blue-50/70 border border-blue-100 rounded-2xl p-4">
                     <div class="text-[11px] font-bold uppercase tracking-wider text-blue-600 mb-1 flex items-center gap-1">
                       <i data-lucide="map-pin" class="w-3.5 h-3.5"></i>
-                      Your Boarding Stop
+                      Your Stop
                     </div>
                     <h2 class="text-lg font-extrabold text-slate-900">UQ Lakes Station - Platform A</h2>
                     <p class="text-xs text-slate-500 mt-0.5">St Lucia • South East Busway Connection</p>
                   </div>
 
-                  <!-- Route 66 Bus Card -->
+                  <!-- Route 66 Service Card -->
                   <div class="bg-white rounded-2xl p-5 border-2 border-blue-500 shadow-lg shadow-blue-500/5 relative overflow-hidden">
                     <div class="flex items-start justify-between">
                       <div class="flex items-center gap-3">
@@ -190,27 +254,31 @@
                       </div>
                     </div>
 
-                    <!-- Arrival Countdown Banner -->
+                    <!-- Countdown Display -->
                     <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
                       <div class="flex items-center gap-1.5 text-xs text-slate-600 font-semibold">
                         <i data-lucide="clock" class="w-4 h-4 text-blue-600"></i>
                         Next Service:
                       </div>
-                      <div class="text-sm font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 flex items-center gap-1.5 animate-pulse">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                        Bus arriving in 5 mins
+                      <div 
+                        class="text-sm font-black px-3 py-1 rounded-full border flex items-center gap-1.5"
+                        :class="isTimePressure ? 'text-rose-700 bg-rose-50 border-rose-200' : 'text-emerald-700 bg-emerald-50 border-emerald-200 animate-pulse'"
+                      >
+                        <span class="w-2 h-2 rounded-full" :class="isTimePressure ? 'bg-rose-500' : 'bg-emerald-500'"></span>
+                        {{ isTimePressure ? 'Bus arriving in 1 min (Late)' : 'Bus arriving in 5 mins' }}
                       </div>
                     </div>
                   </div>
 
-                  <!-- Context Prompt Note -->
+                  <!-- Context Prompt -->
                   <div class="bg-slate-100 rounded-2xl p-3.5 text-xs text-slate-600 flex items-start gap-2.5">
                     <i data-lucide="info" class="w-4 h-4 text-slate-500 shrink-0 mt-0.5"></i>
-                    <span>Need ramp deployment or physical assistance? Notify the incoming driver in advance.</span>
+                    <span>Need boarding ramp or driver physical assistance? Request support before bus arrives.</span>
                   </div>
+
                 </div>
 
-                <!-- Primary Action Button: Request Accessible Boarding -->
+                <!-- Primary Action -->
                 <div class="pt-4">
                   <button 
                     @click="passengerStep = 2"
@@ -222,49 +290,52 @@
                 </div>
               </div>
 
-              <!-- SCREEN 2: Assistance Request (Checkboxes) -->
+              <!-- SCREEN 2: Assistance Request (Q1.2 Multi-scenario Checkboxes) -->
               <div v-if="passengerStep === 2" class="flex-1 p-5 flex flex-col justify-between overflow-y-auto">
                 <div class="space-y-4">
-                  <!-- Header with Back Button -->
+                  <!-- Header -->
                   <div class="flex items-center gap-2">
                     <button @click="passengerStep = 1" class="p-1 text-slate-400 hover:text-slate-700 rounded-lg">
                       <i data-lucide="arrow-left" class="w-5 h-5"></i>
                     </button>
                     <div>
                       <h2 class="text-base font-extrabold text-slate-900 leading-tight">Assistance Request</h2>
-                      <p class="text-xs text-slate-500">Select the support you require for Route 66</p>
+                      <p class="text-xs text-slate-500">Select options below to test different scenarios</p>
                     </div>
                   </div>
 
-                  <!-- Checkbox Selection Group -->
-                  <div class="space-y-3 pt-2">
-                    <!-- Option 1: I use a wheelchair -->
+                  <!-- Checkboxes (Dynamic Q1.2 Options) -->
+                  <div class="space-y-3 pt-1">
+                    
+                    <!-- Option 1: Wheelchair -->
                     <label 
                       :class="requestOptions.wheelchair ? 'bg-blue-50/90 border-blue-500 ring-2 ring-blue-200' : 'bg-white border-slate-200 hover:bg-slate-50'"
-                      class="flex items-start gap-3.5 p-4 rounded-2xl border-2 transition-all cursor-pointer shadow-sm"
+                      class="flex items-start gap-3.5 p-3.5 rounded-2xl border-2 transition-all cursor-pointer shadow-sm"
                     >
                       <input 
                         type="checkbox" 
                         v-model="requestOptions.wheelchair"
+                        @change="onManualOptionChange"
                         class="mt-0.5 w-5 h-5 text-blue-600 rounded-lg border-slate-300 focus:ring-blue-500"
                       />
                       <div class="flex-1">
                         <div class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
                           <i data-lucide="wheelchair" class="w-4 h-4 text-blue-600"></i>
-                          I use a wheelchair / mobility device
+                          I use a wheelchair
                         </div>
-                        <p class="text-[11px] text-slate-500 mt-0.5">Driver will reserve the priority accessible bay.</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Reserves priority space on Route 66 bus.</p>
                       </div>
                     </label>
 
-                    <!-- Option 2: I require the boarding ramp -->
+                    <!-- Option 2: Ramp -->
                     <label 
                       :class="requestOptions.ramp ? 'bg-blue-50/90 border-blue-500 ring-2 ring-blue-200' : 'bg-white border-slate-200 hover:bg-slate-50'"
-                      class="flex items-start gap-3.5 p-4 rounded-2xl border-2 transition-all cursor-pointer shadow-sm"
+                      class="flex items-start gap-3.5 p-3.5 rounded-2xl border-2 transition-all cursor-pointer shadow-sm"
                     >
                       <input 
                         type="checkbox" 
                         v-model="requestOptions.ramp"
+                        @change="onManualOptionChange"
                         class="mt-0.5 w-5 h-5 text-blue-600 rounded-lg border-slate-300 focus:ring-blue-500"
                       />
                       <div class="flex-1">
@@ -272,33 +343,43 @@
                           <i data-lucide="align-justify" class="w-4 h-4 text-blue-600"></i>
                           I require the boarding ramp
                         </div>
-                        <p class="text-[11px] text-slate-500 mt-0.5">Driver will lower chassis and deploy flip-out ramp.</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Driver will deploy mechanical/manual flip-out ramp.</p>
                       </div>
                     </label>
 
-                    <!-- Option 3: I may require driver assistance -->
+                    <!-- Option 3: Physical Assistance -->
                     <label 
-                      :class="requestOptions.assistance ? 'bg-blue-50/90 border-blue-500 ring-2 ring-blue-200' : 'bg-white border-slate-200 hover:bg-slate-50'"
-                      class="flex items-start gap-3.5 p-4 rounded-2xl border-2 transition-all cursor-pointer shadow-sm"
+                      :class="requestOptions.assistance ? 'bg-indigo-50/90 border-indigo-500 ring-2 ring-indigo-200' : 'bg-white border-slate-200 hover:bg-slate-50'"
+                      class="flex items-start gap-3.5 p-3.5 rounded-2xl border-2 transition-all cursor-pointer shadow-sm"
                     >
                       <input 
                         type="checkbox" 
                         v-model="requestOptions.assistance"
-                        class="mt-0.5 w-5 h-5 text-blue-600 rounded-lg border-slate-300 focus:ring-blue-500"
+                        @change="onManualOptionChange"
+                        class="mt-0.5 w-5 h-5 text-indigo-600 rounded-lg border-slate-300 focus:ring-indigo-500"
                       />
                       <div class="flex-1">
                         <div class="text-xs font-bold text-slate-900 flex items-center gap-1.5">
-                          <i data-lucide="hand-helping" class="w-4 h-4 text-blue-600"></i>
+                          <i data-lucide="hand-helping" class="w-4 h-4 text-indigo-600"></i>
                           I may require driver assistance
                         </div>
-                        <p class="text-[11px] text-slate-500 mt-0.5">Physical guiding, pushing support, or luggage clearance.</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Physical pushing, luggage help, or verbal guidance.</p>
                       </div>
                     </label>
+
+                  </div>
+
+                  <!-- Current Detected Scenario Tag -->
+                  <div class="bg-slate-100 rounded-xl px-3 py-2 text-[11px] text-slate-600 flex items-center justify-between">
+                    <span>Active Scenario Mapping:</span>
+                    <span class="font-extrabold text-blue-700 bg-white px-2 py-0.5 rounded border border-slate-200 shadow-sm">
+                      {{ scenarioSummaryText }}
+                    </span>
                   </div>
                 </div>
 
-                <!-- Submit Button: Send Request -->
-                <div class="pt-4">
+                <!-- Submit Button -->
+                <div class="pt-3">
                   <button 
                     @click="submitRequest"
                     :disabled="!hasSelectedOption"
@@ -306,12 +387,12 @@
                     class="w-full py-4 font-extrabold text-sm rounded-2xl flex items-center justify-center gap-2 transition-all"
                   >
                     <i data-lucide="send" class="w-4 h-4"></i>
-                    Send Request to Driver
+                    Send Request
                   </button>
                 </div>
               </div>
 
-              <!-- SCREEN 3: Confirmation & Real-time Live Status -->
+              <!-- SCREEN 3: Confirmation & Dwell Waiting -->
               <div v-if="passengerStep === 3" class="flex-1 p-5 flex flex-col justify-between overflow-y-auto">
                 <div class="space-y-4">
                   <!-- Confirmation Banner -->
@@ -323,8 +404,8 @@
                     <p class="text-xs font-semibold text-emerald-700 mt-1">Accessible boarding assistance requested</p>
                   </div>
 
-                  <!-- Live Bus Progress Status -->
-                  <div class="bg-white rounded-2xl p-4 border border-slate-200 space-y-3">
+                  <!-- Live Arrival Status -->
+                  <div class="bg-white rounded-2xl p-4 border border-slate-200 space-y-3 shadow-sm">
                     <div class="flex items-center justify-between text-xs pb-2 border-b border-slate-100">
                       <span class="text-slate-500 font-medium">Incoming Vehicle:</span>
                       <span class="font-bold text-slate-800 font-mono">Bus #2418 (Route 66)</span>
@@ -337,28 +418,27 @@
                       </span>
                     </div>
 
-                    <!-- Live Driver Acknowledgment Status Indicator -->
+                    <!-- Acknowledgment State -->
                     <div class="p-3 rounded-xl transition-all" :class="driverAcknowledged ? 'bg-blue-50 border border-blue-200' : 'bg-slate-50 border border-slate-200'">
                       <div class="flex items-center gap-2 text-xs font-bold" :class="driverAcknowledged ? 'text-blue-700' : 'text-slate-500'">
                         <i v-if="driverAcknowledged" data-lucide="check-check" class="w-4 h-4 text-blue-600"></i>
                         <span v-else class="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
-                        {{ driverAcknowledged ? 'Driver Acknowledged: Preparing Ramp' : 'Transmitting to Driver Console...' }}
+                        {{ driverAcknowledged ? 'Driver Confirmed: Approaching Platform A' : 'Transmitting to Driver Console...' }}
                       </div>
                     </div>
                   </div>
 
-                  <!-- Passenger Guidance Steps -->
-                  <div class="bg-slate-100/80 rounded-2xl p-4 space-y-2 text-xs text-slate-600">
-                    <div class="font-bold text-slate-800 flex items-center gap-1.5">
-                      <i data-lucide="info" class="w-4 h-4 text-blue-600"></i>
-                      What to do next:
+                  <!-- Request Summary -->
+                  <div class="bg-slate-100 rounded-2xl p-3.5 space-y-1.5 text-xs text-slate-600">
+                    <div class="font-bold text-slate-800">Confirmed Request Details:</div>
+                    <div class="flex flex-wrap gap-1.5 pt-1">
+                      <span v-if="requestOptions.wheelchair" class="bg-white px-2 py-0.5 rounded text-[11px] font-medium border border-slate-200">♿ Wheelchair</span>
+                      <span v-if="requestOptions.ramp" class="bg-white px-2 py-0.5 rounded text-[11px] font-medium border border-slate-200">⚙️ Ramp</span>
+                      <span v-if="requestOptions.assistance" class="bg-white px-2 py-0.5 rounded text-[11px] font-medium border border-slate-200">🤝 Driver Assistance</span>
                     </div>
-                    <p>• Wait behind the yellow tactile safety tiles at Platform A.</p>
-                    <p>• Driver will kneel bus and deploy ramp upon stopping.</p>
                   </div>
                 </div>
 
-                <!-- Simulation Trigger Button (In case not using Split View) -->
                 <div v-if="viewMode === 'passenger'" class="pt-2">
                   <button 
                     @click="simulateBoardingCompleted"
@@ -370,7 +450,7 @@
                 </div>
               </div>
 
-              <!-- SCREEN 4: Boarding Completed & Micro-Feedback -->
+              <!-- SCREEN 4: Boarding Completed & Micro-Feedback Survey -->
               <div v-if="passengerStep === 4" class="flex-1 p-5 flex flex-col justify-between overflow-y-auto">
                 <div class="space-y-4">
                   
@@ -379,14 +459,14 @@
                     <div class="w-10 h-10 bg-blue-600 text-white rounded-full flex items-center justify-center mx-auto mb-2 shadow-md">
                       <i data-lucide="sparkles" class="w-5 h-5"></i>
                     </div>
-                    <h2 class="text-lg font-black text-slate-900">Boarding completed 🎉</h2>
-                    <p class="text-xs text-slate-500 mt-0.5">Please take 10 seconds to rate your boarding experience.</p>
+                    <h2 class="text-lg font-black text-slate-900">Boarding completed</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Please evaluate your boarding interaction</p>
                   </div>
 
                   <!-- Feedback Q1: How was your boarding experience? -->
-                  <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2.5">
+                  <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2.5 shadow-sm">
                     <label class="text-xs font-extrabold text-slate-900 block">
-                      1. How was your boarding experience?
+                      How was your boarding experience?
                     </label>
                     <div class="grid grid-cols-3 gap-2">
                       <button 
@@ -401,10 +481,10 @@
                     </div>
                   </div>
 
-                  <!-- Feedback Q2: What was the issue? (Shown or optional) -->
-                  <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2.5">
+                  <!-- Feedback Q2: What was the issue? -->
+                  <div class="bg-white p-4 rounded-2xl border border-slate-200 space-y-2.5 shadow-sm">
                     <label class="text-xs font-extrabold text-slate-900 block">
-                      2. What was the issue? <span class="text-slate-400 font-normal">(Select all that apply)</span>
+                      What was the issue? <span class="text-slate-400 font-normal">(Optional)</span>
                     </label>
                     <div class="grid grid-cols-2 gap-2">
                       <button 
@@ -422,7 +502,7 @@
 
                 </div>
 
-                <!-- Submit Feedback Button -->
+                <!-- Submit Button -->
                 <div class="pt-3">
                   <button 
                     @click="submitFeedback"
@@ -436,25 +516,26 @@
                 </div>
               </div>
 
-              <!-- SCREEN 5: Evaluation Thank You State -->
+              <!-- SCREEN 5: Evaluation Trial Thank You -->
               <div v-if="passengerStep === 5" class="flex-1 p-6 flex flex-col items-center justify-center text-center space-y-4">
                 <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center shadow-inner">
                   <i data-lucide="heart" class="w-8 h-8 fill-emerald-600"></i>
                 </div>
-                <h2 class="text-xl font-extrabold text-slate-900">Thank you!</h2>
+                <h2 class="text-xl font-extrabold text-slate-900">Evaluation Run Logged!</h2>
                 <p class="text-xs text-slate-600 max-w-xs">
-                  Your feedback has been logged to the Translink Accessibility Operations & DECO6500 Inquiry Database.
+                  Participant response recorded under <strong>{{ activeScenarioTitle }}</strong> ({{ isTimePressure ? '🔴 Time Pressure' : '🟢 Normal Condition' }}).
                 </p>
-                <div class="bg-slate-100 p-3 rounded-xl w-full text-left font-mono text-[11px] text-slate-600 space-y-1">
-                  <div>Status: Recorded</div>
+                <div class="bg-slate-100 p-3.5 rounded-2xl w-full text-left font-mono text-[11px] text-slate-700 space-y-1 border border-slate-200">
+                  <div>Scenario: {{ activeScenarioTitle }}</div>
+                  <div>Condition: {{ isTimePressure ? 'DELAYED (+6 min)' : 'ON TIME' }}</div>
                   <div>Rating: {{ feedback.experience }}</div>
-                  <div>Issues: {{ feedback.issues.join(', ') || 'None' }}</div>
+                  <div>Reported Issues: {{ feedback.issues.join(', ') || 'None' }}</div>
                 </div>
                 <button 
                   @click="resetFlow" 
                   class="mt-4 px-6 py-2.5 bg-blue-600 text-white font-bold text-xs rounded-xl hover:bg-blue-700 transition-colors shadow"
                 >
-                  Start New Test Run
+                  Start Next Participant Trial
                 </button>
               </div>
 
@@ -463,18 +544,18 @@
         </section>
 
 
-        <!-- ========================================== -->
-        <!-- 2. DRIVER SIDE DEVICE (Vehicle Tablet MDT) -->
-        <!-- ========================================== -->
+        <!-- ======================================================== -->
+        <!-- 2. DRIVER CONSOLE (Vehicle MDT Tablet Viewport)           -->
+        <!-- ======================================================== -->
         <section 
           v-if="viewMode === 'split' || viewMode === 'driver'"
           class="flex flex-col items-center"
         >
-          <!-- Device Header Tag -->
+          <!-- Device Header -->
           <div class="w-full flex items-center justify-between px-3 mb-2 text-xs font-bold text-slate-400 uppercase tracking-wider">
-            <span class="flex items-center gap-1.5 text-amber-400">
+            <span class="flex items-center gap-1.5" :class="isTimePressure ? 'text-rose-400 font-extrabold' : 'text-amber-400'">
               <i data-lucide="tablet" class="w-4 h-4"></i>
-              Driver Console (In-Cab MDT Unit)
+              Driver In-Cab Console (MDT Screen)
             </span>
             <span class="font-mono text-[11px] text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
               Vehicle #2418 • Route 66
@@ -484,120 +565,178 @@
           <!-- Tablet Shell -->
           <div class="w-full bg-slate-900 rounded-[36px] p-4 shadow-2xl border-4 border-slate-800 relative flex flex-col justify-between overflow-hidden ring-1 ring-slate-700/50 min-h-[620px]">
             
-            <!-- In-Cab Tablet UI -->
+            <!-- Tablet Screen -->
             <div class="w-full h-full bg-slate-950 rounded-[24px] text-slate-100 flex flex-col overflow-hidden border border-slate-800">
               
-              <!-- Driver Top Telemetry Bar -->
-              <div class="px-5 py-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between">
+              <!-- Driver Top Telemetry Status Bar (Q2.1 Condition Display) -->
+              <div 
+                class="px-5 py-3 border-b flex items-center justify-between transition-colors"
+                :class="isTimePressure ? 'bg-rose-950/80 border-rose-800/80' : 'bg-slate-900 border-slate-800'"
+              >
                 <div class="flex items-center gap-3">
                   <span class="px-2.5 py-1 bg-blue-600 text-white font-black text-xs rounded-lg font-mono">
                     RT-66
                   </span>
                   <div>
                     <div class="text-xs font-extrabold text-slate-200">Express to RBWH</div>
-                    <div class="text-[11px] text-slate-400">Next: <strong>UQ Lakes Station (Platform A)</strong></div>
+                    <div class="text-[11px] text-slate-400">Approaching: <strong>UQ Lakes Station (Platform A)</strong></div>
                   </div>
                 </div>
+
+                <!-- Live Punctuality Indicator (Q2.1 Core Variable) -->
                 <div class="flex items-center gap-3">
                   <div class="text-right">
                     <div class="text-xs font-bold text-slate-300 font-mono">14:28:45</div>
-                    <div class="text-[10px] text-emerald-400 font-semibold flex items-center gap-1 justify-end">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> On Time
+                    
+                    <!-- On Time vs. Time Pressure Banner -->
+                    <div v-if="!isTimePressure" class="text-[11px] text-emerald-400 font-bold flex items-center gap-1.5 justify-end">
+                      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                      🟢 On Time
+                    </div>
+                    <div v-else class="text-[11px] text-rose-400 font-black flex items-center gap-1.5 justify-end bg-rose-900/60 px-2 py-0.5 rounded border border-rose-500/50 animate-pulse">
+                      <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                      🔴 6 min behind schedule
                     </div>
                   </div>
                 </div>
               </div>
 
-              <!-- DRIVER STATE 0: Waiting / Standby -->
+              <!-- Time Pressure Warning Ribbon inside MDT -->
+              <div v-if="isTimePressure" class="bg-rose-600 text-white px-4 py-1.5 text-xs font-extrabold flex items-center justify-between border-b border-rose-700">
+                <span class="flex items-center gap-1.5">
+                  <i data-lucide="clock-alert" class="w-3.5 h-3.5"></i>
+                  SCHEDULE PRESSURE: 6 MIN DELAY
+                </span>
+                <span class="text-[11px] font-mono bg-black/30 px-2 py-0.5 rounded">
+                  Target Dwell: &lt; 90s
+                </span>
+              </div>
+
+              <!-- DRIVER STATE 0: Standby -->
               <div v-if="driverStep === 0" class="flex-1 p-8 flex flex-col items-center justify-center text-center space-y-4">
-                <div class="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500 animate-pulse">
-                  <i data-lucide="radio" class="w-8 h-8 text-blue-400"></i>
+                <div class="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-500">
+                  <i data-lucide="radio" class="w-8 h-8 text-blue-400 animate-pulse"></i>
                 </div>
                 <div>
-                  <h3 class="text-base font-bold text-slate-200">MDT Standing By for Incoming Requests</h3>
+                  <h3 class="text-base font-bold text-slate-200">MDT Standing By for Passenger Alerts</h3>
                   <p class="text-xs text-slate-400 max-w-sm mt-1">
-                    When a passenger at UQ Lakes requests accessible boarding, telemetry alert will sound here.
+                    Telemetry is active for Route 66. When a passenger at UQ Lakes requests boarding, tailored assistance SOP will display here.
                   </p>
                 </div>
-                <div class="text-[11px] text-slate-400 bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
-                  Tip: Use the Passenger screen on the left to send a request!
+                <div class="text-[11px] text-slate-400 bg-slate-900/80 px-3.5 py-2 rounded-xl border border-slate-800">
+                  ⚡ Click <strong>"Send Request"</strong> on Passenger App to trigger incoming alert.
                 </div>
               </div>
 
-              <!-- DRIVER SCREEN 1: Incoming Accessibility Request Alert -->
-              <div v-if="driverStep === 1" class="flex-1 p-6 flex flex-col justify-between bg-gradient-to-b from-amber-950/40 to-slate-950">
+              <!-- DRIVER SCREEN 1: Dynamic Assistance Alert (Q1.2 Different Scenarios) -->
+              <div v-if="driverStep === 1" class="flex-1 p-6 flex flex-col justify-between bg-gradient-to-b from-amber-950/30 to-slate-950">
                 <div class="space-y-4">
                   
-                  <!-- Alert Header Banner -->
+                  <!-- Priority Notification Header -->
                   <div class="bg-amber-500 text-slate-950 p-4 rounded-2xl flex items-center justify-between shadow-lg shadow-amber-500/20">
                     <div class="flex items-center gap-3">
                       <div class="w-10 h-10 bg-slate-950 text-amber-400 rounded-xl flex items-center justify-center">
                         <i data-lucide="bell-ring" class="w-6 h-6 animate-bounce"></i>
                       </div>
                       <div>
-                        <div class="text-xs font-black uppercase tracking-wider">Priority Alert</div>
+                        <div class="text-xs font-black uppercase tracking-wider">Upcoming Stop Assistance</div>
                         <h2 class="text-lg font-black leading-tight">Accessibility Request</h2>
                       </div>
                     </div>
                     <span class="text-xs font-bold bg-slate-950/20 px-2.5 py-1 rounded-lg">Next Stop</span>
                   </div>
 
-                  <!-- Details Card -->
-                  <div class="bg-slate-900 border-2 border-amber-500/60 rounded-2xl p-5 space-y-3 shadow-xl">
+                  <!-- Dynamic Alert Card (Scenario A / B / C) -->
+                  <div class="bg-slate-900 border-2 border-amber-500/60 rounded-2xl p-5 space-y-3.5 shadow-xl">
                     <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-                      <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Target Stop:</span>
+                      <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">Next Stop:</span>
                       <span class="text-sm font-black text-white">UQ Lakes (Platform A)</span>
                     </div>
 
+                    <!-- Dynamic Scenario Requirements (Tailored for Q1.2) -->
                     <div class="space-y-2.5">
-                      <div class="flex items-center gap-2.5 text-sm font-bold text-amber-300">
-                        <i data-lucide="wheelchair" class="w-5 h-5 text-amber-400"></i>
+                      
+                      <!-- Scenario A & B: Wheelchair -->
+                      <div v-if="requestOptions.wheelchair" class="flex items-center gap-3 text-sm font-bold text-amber-300">
+                        <div class="w-7 h-7 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                          <i data-lucide="wheelchair" class="w-4 h-4"></i>
+                        </div>
                         <span>Wheelchair passenger waiting</span>
                       </div>
-                      <div class="flex items-center gap-2.5 text-sm font-bold text-amber-300">
-                        <i data-lucide="align-justify" class="w-5 h-5 text-amber-400"></i>
-                        <span>Ramp required</span>
+
+                      <!-- Scenario C: Non-wheelchair mobility device -->
+                      <div v-else class="flex items-center gap-3 text-sm font-bold text-amber-300">
+                        <div class="w-7 h-7 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                          <i data-lucide="person-standing" class="w-4 h-4"></i>
+                        </div>
+                        <span>Mobility support passenger waiting (Walking frame / Scooter)</span>
                       </div>
-                      <div v-if="requestOptions.assistance" class="flex items-center gap-2.5 text-sm font-bold text-amber-300">
-                        <i data-lucide="hand-helping" class="w-5 h-5 text-amber-400"></i>
-                        <span>Driver assistance requested</span>
+
+                      <!-- Scenario A & B: Ramp required -->
+                      <div v-if="requestOptions.ramp" class="flex items-center gap-3 text-sm font-bold text-amber-300">
+                        <div class="w-7 h-7 rounded-lg bg-amber-500/20 flex items-center justify-center text-amber-400 shrink-0">
+                          <i data-lucide="align-justify" class="w-4 h-4"></i>
+                        </div>
+                        <span>Ramp required (Chassis kneel + manual flip-out)</span>
                       </div>
+
+                      <!-- Scenario C: No ramp needed -->
+                      <div v-else class="flex items-center gap-3 text-sm font-semibold text-slate-400">
+                        <div class="w-7 h-7 rounded-lg bg-slate-800 flex items-center justify-center text-slate-500 shrink-0">
+                          <i data-lucide="slash" class="w-4 h-4"></i>
+                        </div>
+                        <span>No ramp required (Standard step kneeling sufficient)</span>
+                      </div>
+
+                      <!-- Scenario B Specific: Driver physical assistance -->
+                      <div v-if="requestOptions.assistance" class="flex items-center gap-3 text-sm font-bold text-indigo-300 bg-indigo-950/40 p-2 rounded-xl border border-indigo-500/30">
+                        <div class="w-7 h-7 rounded-lg bg-indigo-500/30 flex items-center justify-center text-indigo-300 shrink-0">
+                          <i data-lucide="hand-helping" class="w-4 h-4"></i>
+                        </div>
+                        <span>Physical assistance requested: Ask passenger before touching device</span>
+                      </div>
+
                     </div>
                   </div>
 
                 </div>
 
-                <!-- Primary Action Button: Acknowledge -->
+                <!-- Primary Acknowledge Button -->
                 <div class="pt-4">
                   <button 
                     @click="acknowledgeDriverRequest"
                     class="w-full py-4 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-slate-950 font-black text-base rounded-2xl shadow-xl shadow-amber-500/30 flex items-center justify-center gap-2.5 transition-all active:scale-[0.99]"
                   >
                     <i data-lucide="check-circle-2" class="w-6 h-6"></i>
-                    Acknowledge Request
+                    Acknowledge
                   </button>
                 </div>
               </div>
 
-              <!-- DRIVER SCREEN 2: Standardized Accessible Protocol Checklist -->
+              <!-- DRIVER SCREEN 2: Tailored SOP Protocol Steps (Dynamic for Q1.2) -->
               <div v-if="driverStep === 2" class="flex-1 p-6 flex flex-col justify-between overflow-y-auto">
                 <div class="space-y-4">
                   
-                  <!-- Stop Action Bar -->
+                  <!-- Stop Status & Scenario Badge -->
                   <div class="bg-blue-900/40 border border-blue-700/50 rounded-2xl p-4 flex items-center justify-between">
                     <div>
                       <div class="text-xs font-bold text-blue-400 uppercase tracking-wider">At Stop: UQ Lakes</div>
                       <div class="text-base font-extrabold text-white">Boarding Protocol Active</div>
                     </div>
-                    <span class="text-xs font-mono bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-400/30">
-                      Standard DDA Procedure
-                    </span>
+                    <div class="text-right">
+                      <span class="text-xs font-bold bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full border border-blue-400/30">
+                        {{ activeScenarioTitle }}
+                      </span>
+                      <div v-if="isTimePressure" class="text-[10px] text-rose-400 font-bold mt-1">
+                        ⚠️ Do NOT skip safety checks
+                      </div>
+                    </div>
                   </div>
 
-                  <!-- 5 Step Standard Checklist -->
+                  <!-- Dynamic Checklist Steps based on Scenario -->
                   <div class="space-y-2.5">
                     <div 
-                      v-for="(step, idx) in driverSteps" 
+                      v-for="(step, idx) in currentTailoredSteps" 
                       :key="idx"
                       @click="toggleDriverChecklist(idx)"
                       class="flex items-start gap-3 p-3.5 rounded-xl border transition-all cursor-pointer select-none"
@@ -618,27 +757,27 @@
 
                 </div>
 
-                <!-- Final Action: Boarding Complete Button -->
+                <!-- Final Action: Boarding Complete -->
                 <div class="pt-4">
                   <button 
                     @click="completeBoarding"
                     class="w-full py-4 bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-black text-base rounded-2xl shadow-xl shadow-emerald-500/25 flex items-center justify-center gap-2.5 transition-all active:scale-[0.99]"
                   >
                     <i data-lucide="check-check" class="w-6 h-6"></i>
-                    Boarding Complete
+                    Boarding complete
                   </button>
                 </div>
               </div>
 
-              <!-- DRIVER STATE 3: Departure Ready -->
+              <!-- DRIVER STATE 3: Departure -->
               <div v-if="driverStep === 3" class="flex-1 p-8 flex flex-col items-center justify-center text-center space-y-4">
                 <div class="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center">
                   <i data-lucide="bus" class="w-8 h-8"></i>
                 </div>
                 <div>
-                  <h3 class="text-lg font-bold text-white">Boarding Finalized - Ready for Departure</h3>
+                  <h3 class="text-lg font-bold text-white">Boarding Complete - Safe Departure</h3>
                   <p class="text-xs text-slate-400 max-w-sm mt-1">
-                    Priority bay locked. Proceed to 다음 station (Cultural Centre).
+                    Passenger safely secured in priority bay. Proceeding to Cultural Centre.
                   </p>
                 </div>
                 <button 
@@ -655,7 +794,7 @@
 
       </div>
 
-      <!-- Evaluation Data Drawer Modal -->
+      <!-- Evaluation Data Drawer Modal (Logs for A2 analysis) -->
       <div 
         v-if="showEvaluationLog" 
         class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4"
@@ -682,16 +821,16 @@
               class="bg-slate-950 p-3.5 rounded-xl border border-slate-800 text-slate-300 space-y-1.5"
             >
               <div class="flex items-center justify-between text-slate-400 text-[11px] pb-1 border-b border-slate-800/80">
-                <span>Run #{{ idx + 1 }} • Timestamp: {{ log.time }}</span>
-                <span class="px-2 py-0.5 rounded text-[10px]" :class="log.experience === 'Easy' ? 'bg-emerald-950 text-emerald-400 border border-emerald-800' : 'bg-amber-950 text-amber-400 border border-amber-800'">
-                  Rating: {{ log.experience }}
+                <span>Run #{{ idx + 1 }} • {{ log.time }}</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold" :class="log.isTimePressure ? 'bg-rose-950 text-rose-300 border border-rose-700' : 'bg-emerald-950 text-emerald-300 border border-emerald-700'">
+                  {{ log.isTimePressure ? '🔴 Delayed (+6m)' : '🟢 On Time' }}
                 </span>
               </div>
               <div class="grid grid-cols-2 gap-2 text-[11px] pt-1">
-                <div><span class="text-slate-500">Route:</span> {{ log.route }} ({{ log.stop }})</div>
-                <div><span class="text-slate-500">Vehicle:</span> {{ log.vehicle }}</div>
-                <div><span class="text-slate-500">Requested:</span> {{ log.requested.join(', ') }}</div>
-                <div><span class="text-slate-500">Reported Issues:</span> {{ log.issues.join(', ') || 'None' }}</div>
+                <div><span class="text-slate-500">Scenario:</span> {{ log.scenario }}</div>
+                <div><span class="text-slate-500">Experience:</span> {{ log.experience }}</div>
+                <div><span class="text-slate-500">Steps Done:</span> {{ log.stepsCompleted }}/{{ log.totalSteps }}</div>
+                <div><span class="text-slate-500">Issues:</span> {{ log.issues.join(', ') || 'None' }}</div>
               </div>
             </div>
           </div>
@@ -709,9 +848,9 @@
 
     </main>
 
-    <!-- Footer Status -->
-    <footer class="border-t border-slate-800/80 bg-slate-950 py-4 px-6 text-center text-xs text-slate-400">
-      <p>DECO6500 A2 Prototype • Functional End-to-End System Verified</p>
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-slate-950 py-3 px-6 text-center text-xs text-slate-400">
+      <p>DECO6500 A2 Prototype • Layer 1 (Q1.2 Scenario Differentiation) & Layer 2 (Q2.1 Time Pressure) Enabled</p>
     </footer>
 
   </div>
@@ -722,14 +861,22 @@
 
     createApp({
       setup() {
-        // View & Flow State
+        // UI & Flow State
         const viewMode = ref('split'); // 'split' | 'passenger' | 'driver'
         const passengerStep = ref(1); // 1: Bus, 2: Select, 3: Confirm, 4: Feedback, 5: ThankYou
         const driverStep = ref(0); // 0: Standby, 1: Alert, 2: Checklist, 3: Departure
         const driverAcknowledged = ref(false);
         const showEvaluationLog = ref(false);
 
-        // Passenger Request State
+        // Q2.1 Time Pressure State
+        const isTimePressure = ref(false);
+        const timerSeconds = ref(0);
+        let timerInterval = null;
+
+        // Q1.2 Active Scenario Mode ('A' | 'B' | 'C')
+        const activeScenario = ref('A');
+
+        // Passenger Request Checkbox State
         const requestOptions = ref({
           wheelchair: true,
           ramp: true,
@@ -742,69 +889,130 @@
           issues: []
         });
 
-        // Driver 5-step Standard Protocol
-        const driverSteps = [
-          '1. Stop close to accessible kerb (within 20cm of tactile pavers)',
-          '2. Allow sufficient boarding time without rushing passenger',
-          '3. Deploy ramp safely and confirm gradient is flat',
-          '4. Ask passenger before providing physical assistance',
-          '5. Confirm passenger is safely positioned in wheelchair bay'
-        ];
-        const driverChecklist = ref([0, 1, 2]);
+        // Driver Checklist State
+        const driverChecklist = ref([]);
 
-        // Cross-tab / Local Storage Evaluation Logs
+        // Evaluation Logs
         const evaluationLogs = ref([]);
 
-        // BroadcastChannel for Real-time Multi-Window Synchronization
-        let channel = null;
-        try {
-          channel = new BroadcastChannel('deco6500_accessible_bus');
-          channel.onmessage = (event) => {
-            handleSyncMessage(event.data);
-          };
-        } catch (e) {
-          console.log('BroadcastChannel not supported in current context, using memory state.');
-        }
+        // Dynamic Scenario Setup Function (Q1.2 Core)
+        const applyScenario = (sc) => {
+          activeScenario.value = sc;
+          if (sc === 'A') {
+            requestOptions.value = { wheelchair: true, ramp: true, assistance: false };
+          } else if (sc === 'B') {
+            requestOptions.value = { wheelchair: true, ramp: true, assistance: true };
+          } else if (sc === 'C') {
+            requestOptions.value = { wheelchair: false, ramp: false, assistance: true };
+          }
+          driverChecklist.value = [];
+          nextTick(() => window.lucide && window.lucide.createIcons());
+        };
 
-        const handleSyncMessage = (data) => {
-          if (data.type === 'PASSENGER_SENT_REQUEST') {
-            requestOptions.value = data.payload;
-            driverStep.value = 1;
-            driverAcknowledged.value = false;
-          } else if (data.type === 'DRIVER_ACKNOWLEDGED') {
-            driverAcknowledged.value = true;
-          } else if (data.type === 'BOARDING_COMPLETED') {
-            passengerStep.value = 4;
-          } else if (data.type === 'RESET') {
-            resetLocalState();
+        const onManualOptionChange = () => {
+          if (requestOptions.value.wheelchair && requestOptions.value.ramp && requestOptions.value.assistance) {
+            activeScenario.value = 'B';
+          } else if (requestOptions.value.wheelchair && requestOptions.value.ramp && !requestOptions.value.assistance) {
+            activeScenario.value = 'A';
+          } else if (!requestOptions.value.ramp) {
+            activeScenario.value = 'C';
+          }
+        };
+
+        const scenarioSummaryText = computed(() => {
+          if (requestOptions.value.wheelchair && requestOptions.value.ramp && requestOptions.value.assistance) {
+            return 'Scenario B: Wheelchair + Ramp + Physical Assist';
+          }
+          if (requestOptions.value.wheelchair && requestOptions.value.ramp) {
+            return 'Scenario A: Wheelchair + Ramp Only';
+          }
+          if (!requestOptions.value.ramp && requestOptions.value.assistance) {
+            return 'Scenario C: Walking Frame / No Ramp';
+          }
+          return 'Custom Request Selection';
+        });
+
+        const activeScenarioTitle = computed(() => {
+          if (requestOptions.value.assistance && requestOptions.value.ramp) {
+            return 'Scenario B (Ramp + Assistance)';
+          }
+          if (requestOptions.value.ramp) {
+            return 'Scenario A (Ramp Only)';
+          }
+          return 'Scenario C (Step-Kneel / No Ramp)';
+        });
+
+        // Dynamic Driver Protocol Steps based on Scenarios (Q1.2 Core Differentiation)
+        const currentTailoredSteps = computed(() => {
+          // Scenario B: Wheelchair + Ramp + Physical Assistance Requested
+          if (requestOptions.value.wheelchair && requestOptions.value.ramp && requestOptions.value.assistance) {
+            return [
+              '1. Stop close to accessible kerb (within 20cm of tactile pavers)',
+              '2. Allow sufficient boarding time without rushing passenger',
+              '3. Deploy ramp safely and confirm gradient is flat',
+              '4. Ask passenger before providing physical assistance (verbal consent required)',
+              '5. Assist passenger up ramp and confirm wheelchair is locked in priority bay'
+            ];
+          }
+
+          // Scenario A: Wheelchair + Ramp Only (No physical assist needed)
+          if (requestOptions.value.wheelchair && requestOptions.value.ramp) {
+            return [
+              '1. Stop close to accessible kerb (within 20cm of tactile pavers)',
+              '2. Allow sufficient boarding time without rushing passenger',
+              '3. Deploy ramp safely and confirm gradient is flat',
+              '4. Stand by front door while passenger self-boards into priority bay',
+              '5. Confirm passenger is safely positioned before retracting ramp'
+            ];
+          }
+
+          // Scenario C: Mobility device / Walking frame but NO ramp
+          return [
+            '1. Stop close to accessible kerb and activate full chassis kneeling (ECAS)',
+            '2. Allow sufficient boarding time without rushing passenger',
+            '3. Offer verbal greeting and ask if physical step guidance is needed',
+            '4. Guide passenger safely to priority seating area',
+            '5. Confirm passenger is seated before releasing vehicle kneeling'
+          ];
+        });
+
+        // Q2.1 Time Pressure Toggle Function
+        const setTimePressure = (val) => {
+          isTimePressure.value = val;
+          if (val) {
+            timerSeconds.value = 0;
+            clearInterval(timerInterval);
+            timerInterval = setInterval(() => {
+              timerSeconds.value++;
+            }, 1000);
+          } else {
+            clearInterval(timerInterval);
           }
           nextTick(() => window.lucide && window.lucide.createIcons());
         };
 
-        const postSync = (type, payload = {}) => {
-          if (channel) {
-            channel.postMessage({ type, payload });
-          }
-        };
+        const formatTimer = computed(() => {
+          const m = Math.floor(timerSeconds.value / 60).toString().padStart(2, '0');
+          const s = (timerSeconds.value % 60).toString().padStart(2, '0');
+          return `${m}:${s}`;
+        });
 
-        // Computed validations
         const hasSelectedOption = computed(() => {
           return requestOptions.value.wheelchair || requestOptions.value.ramp || requestOptions.value.assistance;
         });
 
-        // Actions
+        // Interactive Flow Methods
         const submitRequest = () => {
           passengerStep.value = 3;
-          driverStep.value = 1; // Trigger driver alert
+          driverStep.value = 1;
           driverAcknowledged.value = false;
-          postSync('PASSENGER_SENT_REQUEST', { ...requestOptions.value });
+          driverChecklist.value = [];
           nextTick(() => window.lucide && window.lucide.createIcons());
         };
 
         const acknowledgeDriverRequest = () => {
-          driverStep.value = 2; // Move to driver checklist
+          driverStep.value = 2;
           driverAcknowledged.value = true;
-          postSync('DRIVER_ACKNOWLEDGED');
           nextTick(() => window.lucide && window.lucide.createIcons());
         };
 
@@ -819,15 +1027,13 @@
 
         const completeBoarding = () => {
           driverStep.value = 3;
-          passengerStep.value = 4; // Move passenger to feedback survey
-          postSync('BOARDING_COMPLETED');
+          passengerStep.value = 4;
           nextTick(() => window.lucide && window.lucide.createIcons());
         };
 
         const simulateBoardingCompleted = () => {
           passengerStep.value = 4;
           driverStep.value = 3;
-          postSync('BOARDING_COMPLETED');
           nextTick(() => window.lucide && window.lucide.createIcons());
         };
 
@@ -841,44 +1047,30 @@
         };
 
         const submitFeedback = () => {
-          // Log evaluation trial
-          const requestedArr = [];
-          if (requestOptions.value.wheelchair) requestedArr.push('Wheelchair');
-          if (requestOptions.value.ramp) requestedArr.push('Ramp');
-          if (requestOptions.value.assistance) requestedArr.push('Driver Assistance');
-
           const record = {
             time: new Date().toLocaleTimeString(),
-            route: 'Route 66',
-            stop: 'UQ Lakes Platform A',
-            vehicle: 'Bus #2418',
-            requested: requestedArr,
+            scenario: activeScenarioTitle.value,
+            isTimePressure: isTimePressure.value,
             experience: feedback.value.experience,
+            stepsCompleted: driverChecklist.value.length,
+            totalSteps: currentTailoredSteps.value.length,
             issues: [...feedback.value.issues]
           };
           evaluationLogs.value.unshift(record);
-
           passengerStep.value = 5;
           nextTick(() => window.lucide && window.lucide.createIcons());
         };
 
-        const resetLocalState = () => {
+        const resetFlow = () => {
           passengerStep.value = 1;
           driverStep.value = 0;
           driverAcknowledged.value = false;
           feedback.value = { experience: '', issues: [] };
-          requestOptions.value = { wheelchair: true, ramp: true, assistance: false };
-          driverChecklist.value = [0, 1, 2];
-        };
-
-        const resetFlow = () => {
-          resetLocalState();
-          postSync('RESET');
+          driverChecklist.value = [];
           nextTick(() => window.lucide && window.lucide.createIcons());
         };
 
-        // Watchers & Lifecycle
-        watch([viewMode, passengerStep, driverStep, showEvaluationLog], () => {
+        watch([viewMode, passengerStep, driverStep, isTimePressure, activeScenario, showEvaluationLog], () => {
           nextTick(() => window.lucide && window.lucide.createIcons());
         });
 
@@ -894,10 +1086,18 @@
           requestOptions,
           hasSelectedOption,
           feedback,
-          driverSteps,
+          isTimePressure,
+          activeScenario,
+          scenarioSummaryText,
+          activeScenarioTitle,
+          currentTailoredSteps,
           driverChecklist,
           evaluationLogs,
           showEvaluationLog,
+          formatTimer,
+          applyScenario,
+          onManualOptionChange,
+          setTimePressure,
           submitRequest,
           acknowledgeDriverRequest,
           toggleDriverChecklist,
