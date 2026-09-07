@@ -472,7 +472,7 @@
                     <!-- Acknowledgment State -->
                     <div class="p-3 rounded-xl transition-all" :class="driverAcknowledged ? 'bg-blue-50 border border-blue-200' : 'bg-slate-50 border border-slate-200'">
                       <div class="flex items-center gap-2 text-xs font-bold" :class="driverAcknowledged ? 'text-blue-700' : 'text-slate-500'">
-                        <i v-if="driverAcknowledged" data-lucide="check-check" class="w-4 h-4 text-blue-600"></i>
+                        <svg v-if="driverAcknowledged" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-blue-600"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></svg>
                         <span v-else class="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping"></span>
                         {{ driverAcknowledged ? 'Driver Confirmed: Approaching Platform A' : 'Transmitting to Driver Console...' }}
                       </div>
@@ -807,7 +807,7 @@
                         class="w-6 h-6 rounded-lg flex items-center justify-center font-bold text-xs shrink-0 transition-colors"
                         :class="driverChecklist.includes(idx) ? 'bg-emerald-500 text-slate-950' : 'bg-slate-800 text-slate-400 border border-slate-700'"
                       >
-                        <i v-if="driverChecklist.includes(idx)" data-lucide="check" class="w-4 h-4 stroke-[3]"></i>
+                        <svg v-if="driverChecklist.includes(idx)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><polyline points="20 6 9 17 4 12"></polyline></svg>
                         <span v-else>{{ idx + 1 }}</span>
                       </div>
                       <div class="flex-1 text-xs font-semibold leading-snug">
@@ -828,7 +828,8 @@
                       : 'bg-slate-800/80 text-slate-500 border border-slate-700/60 cursor-not-allowed opacity-75 font-bold'"
                     class="w-full py-4 text-base rounded-2xl flex items-center justify-center gap-2.5 transition-all"
                   >
-                    <i :data-lucide="isChecklistComplete ? 'check-check' : 'shield-alert'" class="w-5 h-5"></i>
+                    <svg v-if="isChecklistComplete" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M18 6 7 17l-5-5"/><path d="m22 10-7.5 7.5L13 16"/></svg>
+                    <svg v-else xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-amber-400"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
                     <span v-if="isChecklistComplete">Boarding complete • Ready for Departure</span>
                     <span v-else>Confirm all 5 steps to complete ({{ remainingStepsCount }} remaining)</span>
                   </button>
