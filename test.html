@@ -1264,15 +1264,19 @@
         });
 
         const toggleDriverChecklist = (idx) => {
-          if (driverChecklist.value.includes(idx)) {
-            driverChecklist.value = driverChecklist.value.filter(i => i !== idx);
-            playTone(440, 0.08);
-          } else {
-            driverChecklist.value.push(idx);
-            playTone(784, 0.08);
-            if (driverChecklist.value.length === currentTailoredSteps.value.length) {
-              setTimeout(() => playTone(1046, 0.22), 120);
+          try {
+            if (driverChecklist.value.includes(idx)) {
+              driverChecklist.value = driverChecklist.value.filter(i => i !== idx);
+              try { playTone(440, 0.08); } catch(e) {}
+            } else {
+              driverChecklist.value = [...driverChecklist.value, idx];
+              try { playTone(784, 0.08); } catch(e) {}
+              if (driverChecklist.value.length === currentTailoredSteps.value.length) {
+                setTimeout(() => { try { playTone(1046, 0.22); } catch(e) {} }, 120);
+              }
             }
+          } catch(err) {
+            console.error('Checklist toggle error:', err);
           }
           nextTick(() => window.lucide && window.lucide.createIcons());
         };
